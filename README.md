@@ -1,6 +1,9 @@
 # Automated Instantly Data Pipeline
 
 A GTM workflow I built in n8n to automate account sourcing through the Instantly SuperSearch API and transfer the resulting data into Google Sheets for further lead scoring via GPT for Sheets.
+## Workflow overview
+
+![n8n Instantly data pipeline](Workflow Overview.png)
 
 ## What it does
 
