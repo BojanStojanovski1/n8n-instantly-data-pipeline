@@ -1,0 +1,825 @@
+{
+  "name": "Instantly Data -> Google Sheets Workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        -176
+      ],
+      "id": "ae206a77-d38d-4d00-b609-b331dc2ca68e",
+      "name": "Manual Trigger"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.instantly.ai/api/v2/supersearch-enrichment/enrich-leads-from-supersearch",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"search_filters\": {\n    \"title\": {\n      \"include\": [\n        \"CEO\",\n        \"COO\",\n        \"Chief Executive Officer\",\n        \"Co-Founder\",\n        \"Founder\",\n        \"Managing Director\",\n        \"Owner\"\n      ],\n      \"exclude\": []\n    },\n    \"locations\": {\n      \"include\": [\n        {\n          \"country\": \"Italy\"\n        },\n        {\n          \"country\": \"Netherlands\"\n        },\n        {\n          \"country\": \"Austria\"\n        },\n        {\n          \"country\": \"United Kingdom\"\n        },\n        {\n          \"country\": \"Ireland\"\n        },\n        {\n          \"country\": \"Belgium\"\n        },\n        {\n          \"country\": \"Spain\"\n        },\n        {\n          \"country\": \"Poland\"\n        },\n        {\n          \"country\": \"Luxembourg\"\n        },\n        {\n          \"country\": \"Denmark\"\n        },\n        {\n          \"country\": \"Sweden\"\n        },\n        {\n          \"country\": \"Finland\"\n        },\n        {\n          \"country\": \"Norway\"\n        },\n        {\n          \"country\": \"France\"\n        }\n      ],\n      \"exclude\": []\n    },\n    \"department\": [],\n    \"level\": [],\n    \"revenue\": [],\n    \"news\": [],\n    \"fundingType\": [],\n    \"technologies\": [],\n    \"signals\": [],\n    \"locationMode\": \"contact\",\n    \"subIndustry\": {\n      \"exclude\": [\n        \"Marketing and Advertising\"\n      ]\n    },\n    \"employeeCount\": [\n      {\n        \"op\": \"preset_between\",\n        \"min\": 1,\n        \"max\": 10\n      },\n      {\n        \"op\": \"preset_between\",\n        \"min\": 11,\n        \"max\": 25\n      }\n    ],\n    \"keyword_filter\": {\n      \"include\": \"\",\n      \"exclude\": \"Cold Outbound, Email Agency, Lead Generation, Marketing Agency, Outbound Agency, recruitment\",\n      \"include_mode\": \"ANY\"\n    },\n    \"jobListingFilter\": [\n      \"BDR\",\n      \"Business Development\",\n      \"Business Development Representative\",\n      \"Outbound BDR\",\n      \"Outbound SDR\",\n      \"Outbound Sales\",\n      \"Outbound Sales Representative\",\n      \"SDR\",\n      \"Sales Development\",\n      \"Sales Development Representative\"\n    ],\n    \"skip_owned_leads\": true,\n    \"show_one_lead_per_company\": true\n  },\n  \"limit\": 10,\n  \"list_name\": \"Example GTM SuperSearch\",\n  \"work_email_enrichment\": true,\n  \"skip_rows_without_email\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        176,
+        -176
+      ],
+      "id": "0eea2ee2-2759-4f6c-80e9-b39ae14155e5",
+      "name": "Trigger Instantly Supersearch"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.instantly.ai/api/v2/leads/list",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"list_id\": \"{{ $('Trigger Instantly Supersearch').item.json.resource_id }}\",\n  \"limit\": 100\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        816,
+        -192
+      ],
+      "id": "32a36a93-57ff-4fdf-b2de-628b0faaba0b",
+      "name": "Receive Leads from Instantly"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "YOUR_GOOGLE_SHEET",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Job Title",
+              "displayName": "Job Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company Domain",
+              "displayName": "Company Domain",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "AI Status",
+              "displayName": "AI Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "timestamp_created",
+              "displayName": "timestamp_created",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "timestamp_updated",
+              "displayName": "timestamp_updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "organization",
+              "displayName": "organization",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email_open_count",
+              "displayName": "email_open_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email_reply_count",
+              "displayName": "email_reply_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email_click_count",
+              "displayName": "email_click_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "company_domain",
+              "displayName": "company_domain",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status_summary",
+              "displayName": "status_summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "last_name",
+              "displayName": "last_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "first_name",
+              "displayName": "first_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "company_name",
+              "displayName": "company_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "job_title",
+              "displayName": "job_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "payload",
+              "displayName": "payload",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "verification_status",
+              "displayName": "verification_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "list_id",
+              "displayName": "list_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "esp_code",
+              "displayName": "esp_code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "esg_code",
+              "displayName": "esg_code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1392,
+        -208
+      ],
+      "id": "054f1735-ef57-495a-807d-eab3306d6adc",
+      "name": "Transfer Data to Sheets"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "items",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        -208
+      ],
+      "id": "4e500be7-3672-4627-add1-40abca278a2e",
+      "name": "Split Data into Rows for sheets"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        336,
+        -176
+      ],
+      "id": "0b92725b-30a5-4a87-a60b-444f1a779e45",
+      "name": "Wait for Instantly Verification",
+      "webhookId": "1463e79b-28ce-40b6-954d-43e46bdb1bc4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e1a975d7-e398-46b0-801f-5a5320b9d2dc",
+              "leftValue": "={{ $json.in_progress }}",
+              "rightValue": "success",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        624,
+        16
+      ],
+      "id": "5bd04292-00c5-432e-be7a-cb00d482e37e",
+      "name": "Is Instantly Finished?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b1cf8323-f8aa-4023-aae3-eb307b636836",
+              "leftValue": "={{ $runIndex }}",
+              "rightValue": 29,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        816,
+        16
+      ],
+      "id": "2ea958ac-afe9-4937-8bd5-d5df0306ee5d",
+      "name": "Retry Limit Reached?"
+    },
+    {
+      "parameters": {
+        "errorMessage": "Instantly enrichment did not finish within approximately 60 seconds."
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1008,
+        16
+      ],
+      "id": "314ed7b4-76b7-4720-bb24-f1cc2b958211",
+      "name": "Stop - Instantly Timeout"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ac009953-1668-4396-9559-20cd13e5b82b",
+              "leftValue": "={{ $json.has_no_leads }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        784,
+        240
+      ],
+      "id": "e80eb026-f0e0-4d8d-8b98-5317f44bf320",
+      "name": "Did Instantly Find Leads?"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1408,
+        256
+      ],
+      "id": "e6938e45-ca92-4679-9a15-0231a070d6a1",
+      "name": "End - No Leads Found"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.instantly.ai/api/v2/supersearch-enrichment/{{ $('Trigger Instantly Supersearch').item.json.resource_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        496,
+        -176
+      ],
+      "id": "ee10929a-5548-4c83-a844-c6616c5d40c7",
+      "name": "Check Instantly Enrichment Status"
+    },
+    {
+      "parameters": {
+        "url": "https://api.instantly.ai/api/v2/supersearch-enrichment/saved-searches",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        128,
+        256
+      ],
+      "id": "7d4afc65-3a43-4bde-abe0-0ab7e5a1817e",
+      "name": "Read Saved SuperSearch"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1168,
+        352
+      ],
+      "id": "c72ef1eb-1b04-4f25-a256-4358aad0d6d5",
+      "name": "Wait for Leads to Become Available",
+      "webhookId": "2de04ba9-c883-48fc-a4c3-9cf7fdafa76a"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7ca27f86-f4d9-400b-a5cb-d504954752e3",
+              "leftValue": "={{ $json.items.length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        992,
+        -192
+      ],
+      "id": "9c72c469-ca88-4f5d-a5dc-dbed548e4f25",
+      "name": "Did Retrieval Return Leads?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "37619994-82e6-4126-98ee-c99739da21c6",
+              "leftValue": "={{ $runIndex }}",
+              "rightValue": 2,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1248,
+        16
+      ],
+      "id": "12394dd6-067c-49b7-a171-c84dbb2c3f48",
+      "name": "Retrieval Retry Limit Reached?"
+    },
+    {
+      "parameters": {
+        "errorMessage": "Instantly enrichment completed, but the leads were still unavailable after 3 retrieval attempts."
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        0
+      ],
+      "id": "0350ff7f-c32f-46b3-b162-d21f10ca6875",
+      "name": "Stop - Leads Not Available"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Trigger Instantly Supersearch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger Instantly Supersearch": {
+      "main": [
+        [
+          {
+            "node": "Wait for Instantly Verification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receive Leads from Instantly": {
+      "main": [
+        [
+          {
+            "node": "Did Retrieval Return Leads?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Data into Rows for sheets": {
+      "main": [
+        [
+          {
+            "node": "Transfer Data to Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Instantly Verification": {
+      "main": [
+        [
+          {
+            "node": "Check Instantly Enrichment Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Instantly Finished?": {
+      "main": [
+        [
+          {
+            "node": "Did Instantly Find Leads?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Retry Limit Reached?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retry Limit Reached?": {
+      "main": [
+        [
+          {
+            "node": "Stop - Instantly Timeout",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait for Instantly Verification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Did Instantly Find Leads?": {
+      "main": [
+        [
+          {
+            "node": "Wait for Leads to Become Available",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "End - No Leads Found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Instantly Enrichment Status": {
+      "main": [
+        [
+          {
+            "node": "Is Instantly Finished?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transfer Data to Sheets": {
+      "main": [
+        []
+      ]
+    },
+    "Wait for Leads to Become Available": {
+      "main": [
+        [
+          {
+            "node": "Receive Leads from Instantly",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Did Retrieval Return Leads?": {
+      "main": [
+        [
+          {
+            "node": "Split Data into Rows for sheets",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Retrieval Retry Limit Reached?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieval Retry Limit Reached?": {
+      "main": [
+        [
+          {
+            "node": "Stop - Leads Not Available",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait for Leads to Become Available",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "nodeGroups": [],
+  "tags": []
+}
